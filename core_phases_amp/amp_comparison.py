@@ -29,15 +29,20 @@ def get_dict_amps(TimeResult):
             if prev != None: #debug step
                 pass
                 # print(f"prev:{prev}; phase:{phase}; abs amp{abs(amp)}")
-            grouped[phase] = amp
+            grouped[phase] = abs(amp)
 
     return grouped
 taup_path="~/Research/sct_wat/TauP/build/install/TauP/bin/taup"
 mpl.rcParams.update({'font.size': 14})
 
 # model="prem" # or 'ak135fcont'
-eventdepth=500
-phases=['PKP','PKIKP','SKIKS','PKJKP','SKJKP',]
+# M 8.2 - 2018 Fiji Earthquake #
+# https://earthquake.usgs.gov/earthquakes/eventpage/us1000gcii/executive
+# 2018-08-19 00:19:40 (UTC)18.113°S 178.153°W 600.0 km depth
+eventdepth=600
+phases=['PKP','PKIKP','SKIKS','PKJKP','SKJKP']
+# phases=['PKP','PKIKP','PKJKP']
+
 plt.ion()
 plt.figure(figsize=(16, 7))
 ax = plt.axes()
@@ -51,24 +56,28 @@ amps_J=[]
 amps_I=[]
 amps_K=[]
 colors=['cadetblue','indianred','skyblue','mediumpurple','darkgrey']
+params = taup.TimeQuery()
 with taup.TauPServer(taup_path=taup_path) as taupserver:
-    params = taup.TimeQuery()
     params.model('prem')
     params.sourcedepth(eventdepth)
     # params.station(*sta)
     # params.degree(np.arange(125,136,10))
     params.amp(True)
-    params.mw(8)
+    params.mw(8.2)
     # params.phase(phases)
-    # params.strikediprake([45,20,45])
-    # params.az(20)
+    params.strikediprake([18,69,-94])#
+    #18°	69°	-94°
+    # params.az(60)
+    params.degree(165)
     phase_ratios = defaultdict(list)
     # TimeResult = params.calc(taupserver)
     # sys.exit()
     for i,phase in enumerate(phases):
         j=0
-        for dist in np.arange(60.0,256,2.5):
-            params.degree([dist])
+        # for dist in np.arange(60.0,256,2.5):
+        for az in np.arange(0.0,360,2.5):
+            params.az(az)
+            # params.degree([dist])
             params.phase(phase)
             # for phase, amp in grouped.items():
             TimeResult = params.calc(taupserver)
@@ -77,10 +86,10 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
                 continue
             if amps[phase]!=0:
                 if j==0:
-                    plt.scatter(dist, amps[phase], marker='X', alpha=.8,s=65, color=colors[i],zorder=10,label=phase)
+                    plt.scatter(az, amps[phase], marker='X', alpha=.8,s=65, color=colors[i],zorder=10,label=phase)
                     j=+1
                 else:
-                    plt.scatter(dist, amps[phase], marker='X', alpha=.8,s=65, color=colors[i],zorder=10)
+                    plt.scatter(az, amps[phase], marker='X', alpha=.8,s=65, color=colors[i],zorder=10)
 
 
 #             if amps['PKJKP']!=0 and amps['PKIKP']!=0:# and amps['PKP']!=0:
@@ -101,14 +110,18 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
 ax.set_yscale("log")
 ax.xaxis.set_minor_locator(MultipleLocator(10))
 ax.xaxis.set_major_locator(MultipleLocator(20))
-plt.legend(loc='upper left',fontsize='15')
+# plt.legend(loc='upper left',fontsize='14')
+plt.legend(loc='lower right',fontsize='13')
+
 plt.ylabel("Amplitude (Psv)")#PKIKP/ PKJKP
-plt.xlabel("Distance ($^\\circ$)")
+# plt.xlabel("Distance ($^\\circ$)")
+plt.xlabel("Azimuth ($^\\circ$)")
+
 # plt.title(f"Phase amp; Δ20")
 # plt.title(f"Inner core P vs S amp for Mw 8")
-plt.title(f"Amp comparison for core phases for Mw 8 explosion")
+plt.title(f"Amp comparison for core phases for Mw 8.2 Fiji dist 165: prem")
 
 
 plt.tight_layout()
-# plt.savefig('mx8_expl_3phases.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
-plt.show()
+# plt.savefig('mx8_fiji_5phs_az_155.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
+# plt.show()
