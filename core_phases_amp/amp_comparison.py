@@ -12,10 +12,12 @@ from obspy import read, Stream, UTCDateTime,read_events
 from obspy.geodetics import gps2dist_azimuth
 from collections import defaultdict
 from matplotlib.colors import to_rgba
+from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
+
 ###
 def get_dict_amps(TimeResult):
     """
-    readfs taup_py output and gets phase names and amplitudes.
+    reads taup_py output and gets phase names and amplitudes. saves highest amp in case of multiple arrival at a distance..
     """
     grouped = defaultdict()
     for a in TimeResult.arrivals:
@@ -35,12 +37,12 @@ mpl.rcParams.update({'font.size': 14})
 
 # model="prem" # or 'ak135fcont'
 eventdepth=500
-phases=['PKJKP','PKIKP','PKP']
+phases=['PKP','PKIKP','SKIKS','PKJKP','SKJKP',]
 plt.ion()
-plt.figure(figsize=(14, 6))
+plt.figure(figsize=(16, 7))
 ax = plt.axes()
 # ax.set_facecolor("whitesmoke")#aliceblue
-ax.set_facecolor(to_rgba('darkseagreen', alpha=0.15))
+ax.set_facecolor(to_rgba('darkseagreen', alpha=0.1))
 plt.style.use('ggplot')
 # plt.grid(which='both', linestyle='--', linewidth=0.5, alpha=0.5)
 dists = []
@@ -48,7 +50,7 @@ ratios = []
 amps_J=[]
 amps_I=[]
 amps_K=[]
-
+colors=['cadetblue','indianred','skyblue','mediumpurple','darkgrey']
 with taup.TauPServer(taup_path=taup_path) as taupserver:
     params = taup.TimeQuery()
     params.model('prem')
@@ -57,38 +59,49 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
     # params.degree(np.arange(125,136,10))
     params.amp(True)
     params.mw(8)
-    params.phase(phases)
+    # params.phase(phases)
     # params.strikediprake([45,20,45])
     # params.az(20)
     phase_ratios = defaultdict(list)
     # TimeResult = params.calc(taupserver)
     # sys.exit()
+    for i,phase in enumerate(phases):
+        j=0
+        for dist in np.arange(60.0,256,2.5):
+            params.degree([dist])
+            params.phase(phase)
+            # for phase, amp in grouped.items():
+            TimeResult = params.calc(taupserver)
+            amps = get_dict_amps(TimeResult)
+            if len(amps)== 0:
+                continue
+            if amps[phase]!=0:
+                if j==0:
+                    plt.scatter(dist, amps[phase], marker='X', alpha=.8,s=65, color=colors[i],zorder=10,label=phase)
+                    j=+1
+                else:
+                    plt.scatter(dist, amps[phase], marker='X', alpha=.8,s=65, color=colors[i],zorder=10)
 
-    for dist in np.arange(105.0,176,2):
-        params.degree([dist])
-        # for phase, amp in grouped.items():
-        TimeResult = params.calc(taupserver)
-        amps = get_dict_amps(TimeResult)
-        if len(amps)!= 3:
-            continue
-        if amps['PKJKP']!=0 and amps['PKIKP']!=0:# and amps['PKP']!=0:
-            ratio=np.round(amps['PKJKP']/amps['PKIKP'],5)
-            # print(ratio)
-            dists.append(dist)
-            ratios.append(amps['PKIKP'] / amps['PKJKP'])
-            amps_J.append(amps['PKJKP'])
-            amps_I.append(amps['PKIKP'])
-            amps_K.append(amps['PKP'])
 
-
-plt.plot(dists, amps_K,c='teal',marker='X',markerfacecolor='cadetblue',markersize=12,markeredgewidth=1.15,linestyle='-',linewidth=1.25,alpha=.65,label='PKP')#
-plt.plot(dists, amps_I,c='dodgerblue',marker='X',markerfacecolor='skyblue',markersize=12,markeredgewidth=1.15,linestyle='-',linewidth=1.25,alpha=.65,label='PKIKP')#
-plt.plot(dists, amps_J,c='indigo',marker='X',markerfacecolor='mediumpurple',markersize=12,markeredgewidth=1.15,linestyle='-',linewidth=1.25,alpha=.65,label='PKJKP')#
+#             if amps['PKJKP']!=0 and amps['PKIKP']!=0:# and amps['PKP']!=0:
+#                 ratio=np.round(amps['PKJKP']/amps['PKIKP'],5)
+#                 # print(ratio)
+#                 dists.append(dist)
+#                 ratios.append(amps['PKIKP'] / amps['PKJKP'])
+#                 amps_J.append(amps['PKJKP'])
+#                 amps_I.append(amps['PKIKP'])
+#                 amps_K.append(amps['PKP'])
+#
+# plt.plot(dists, amps_K,c='teal',marker='X',markerfacecolor='cadetblue',markersize=12,markeredgewidth=1.15,linestyle='-',linewidth=1.25,alpha=.65,label='PKP')#
+# plt.plot(dists, amps_I,c='dodgerblue',marker='X',markerfacecolor='skyblue',markersize=12,markeredgewidth=1.15,linestyle='-',linewidth=1.25,alpha=.65,label='PKIKP')#
+# plt.plot(dists, amps_J,c='indigo',marker='X',markerfacecolor='mediumpurple',markersize=12,markeredgewidth=1.15,linestyle='-',linewidth=1.25,alpha=.65,label='PKJKP')#
 
 
 # plt.scatter(dists, ratios, marker='X', alpha=.9,s=99, color='palevioletred',zorder=10)
 ax.set_yscale("log")
-plt.legend()
+ax.xaxis.set_minor_locator(MultipleLocator(10))
+ax.xaxis.set_major_locator(MultipleLocator(20))
+plt.legend(loc='upper left',fontsize='15')
 plt.ylabel("Amplitude (Psv)")#PKIKP/ PKJKP
 plt.xlabel("Distance ($^\\circ$)")
 # plt.title(f"Phase amp; Δ20")
@@ -97,5 +110,5 @@ plt.title(f"Amp comparison for core phases for Mw 8 explosion")
 
 
 plt.tight_layout()
-plt.savefig('mx8_expl_3phases.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
+# plt.savefig('mx8_expl_3phases.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
 plt.show()
