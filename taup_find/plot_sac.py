@@ -1,4 +1,5 @@
 # plots sac for visualising PP precursors to illustrate use of Taup find
+### to add..use of vel merge..taup find in python..
 ###
 import numpy as np
 import taup
@@ -15,7 +16,7 @@ import matplotlib.dates as mdates
 import requests
 from datetime import datetime, timedelta
 
-def plot_tt_curve(jsonTimes,c1,c2,text='True'):
+def plot_tt_curve(jsonTimes,c1,c2,text='True',lss='-',lww=1):
     i=0
     for phase in jsonTimes.phases:
         time_ph=[]
@@ -35,7 +36,7 @@ def plot_tt_curve(jsonTimes,c1,c2,text='True'):
                         i=i+.1
 
         # tp_utc = event_time + time_ph
-        ax.plot(time_ph, dist_ph, color=c2, lw=1,ls='-', label=phase)
+        ax.plot(time_ph, dist_ph, color=c2, lw=lww,ls=lss, label=phase)
 
 ###
 taup_path="~/Research/sct_wat/TauP/build/install/TauP/bin/taup"
@@ -46,15 +47,19 @@ plt.rcParams.update({'font.size': 13})
 
 with taup.TauPServer(taup_path=taup_path) as taupserver:
     params = taup.TimeQuery()
-    params.phase(["pP",'sP','PcP','PP','P^410P','P^660P'])
+    params.phase(["pP",'sP','PcP','PP','P^410P','P^660P','P^1000P'])
+    # params.model('iasp1000.txt')
     params.model('iasp91')
-    params.degree(np.arange(94,101,1))
+
+    params.degree(list(np.arange(94.0,101,1)))
     params.sourcedepth(252)
     jsonTimes = params.calc(taupserver)
     params.phase(['Sed660P^410P','P^410P410s','Pv410pP^660P','Sed660P^660P410s','pP^410P'])# Sed660P^660P410s
+    # params.phase([
     # params.phase(['Pv410pP^660P','Sed660P^660P410s'])
-
     jsonTimes_ = params.calc(taupserver)
+    ##
+
 
 
 # for a in jsonTimes.arrivals:
@@ -88,9 +93,10 @@ for tr in st_all[::4]:
     ax.plot(t, .5*tr.data/tr.data.max() + tr.stats.distance,lw=.5,c='white')
 
 
-plot_tt_curve(jsonTimes,'purple','lightpink')
+plot_tt_curve(jsonTimes,'purple','lightpink',text='True',lss='-',lww=.8)
 #bin/taup find --max 2 --deg 95 --evdepth 252 --exclude 20,210,moho --time 960 990 --rayparamdeg 4.3 7.8 --mod iasp91
-plot_tt_curve(jsonTimes_,'olivedrab','lightgreen',text='False')
+
+# plot_tt_curve(jsonTimes_,'olivedrab','lightgreen',text='False',lss='--',lww=.5)
 
 
 ax.set_ylim(94,99.5)
@@ -101,12 +107,13 @@ ax.set_ylim(94,99.5)
 ax.xaxis.set_label_position('top')
 ax.xaxis.tick_top()
 ax.set_ylabel('Distance ($^\\circ$)')
-# ax.set_xlim(750,1060)
-ax.set_xlim(920,1060)
+ax.set_xlim(750,1060)
+# ax.set_xlim(920,1060)
+plt.title(f"Peru May 2022 Mw 7.2 eq")
 
 ax.yaxis.grid(False)
 
-fig.savefig('btw_410_PP.png', dpi=400, pad_inches=0.1)#bbox_inches='tight',
+# fig.savefig('btw_410_PP.png', dpi=400, pad_inches=0.1)#bbox_inches='tight',
 
 plt.show()
 # for
