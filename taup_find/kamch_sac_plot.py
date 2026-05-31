@@ -47,6 +47,21 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
         params.station(sta.latitude,sta.longitude)
         jsondists = params.calc(taupserver)
         tr.stats.distance=jsondists.distances[0].deg
+    ####
+    params_f = taup.FindQuery()
+    params_f.model('iasp91')
+    params_f.max(2)
+    params_f.sourcedepth(0)
+    params_f.exclude('20,210,moho,410,660')
+    params_f.pwaveonly()
+    jsonfinds = params_f.calcJson(taupserver)
+    # for phase in jsonfinds['foundphases'][:5]:
+    params_c = taup.CurveQuery()
+    params_c.model('iasp91')
+    params_c.sourcedepth(0)
+    params_c.phase(jsonfinds['foundphases'][:2])
+    jsoncurve = params_c.calcJson(taupserver)
+
 ##
 stream_all.sort(['distance'],reverse=True)
 fig = plt.figure(figsize=(16, 8))
@@ -67,3 +82,14 @@ plt.title(f"Kamchatka July 2025 Mw 8.8")
 ax.yaxis.grid(False)
 # fig.savefig('btw_410_PP.png', dpi=400, pad_inches=0.1)#bbox_inches='tight',
 plt.show()
+#####
+# bin/taup find --max 2 --evdepth 35 --exclude 20,210,moho,410,660 --pwaveonly --mod iasp91
+
+with taup.TauPServer(taup_path=taup_path) as taupserver:
+    params = taup.FindQuery()
+    params.model('iasp91')
+    params.max(2)
+    params.sourcedepth(0)
+    params.exclude('20,210,moho,410,660')
+    params.pwaveonly()
+    jsonfinds = params.calcJson(taupserver)
