@@ -1,0 +1,89 @@
+{
+  "modelName": "europa_interior",
+  "radiusOfEuropa": 1560.8,
+  "namedDiscontinuities": [
+    {
+      "name": "ice_ocean_boundary",
+      "depth": 20.0
+    },
+    {
+      "name": "ocean_silicate_boundary",
+      "depth": 140.0
+    },
+    {
+      "name": "silicate_core_boundary",
+      "depth": 1170.0
+    }
+  ],
+  "minRadius": 0.0,
+  "maxRadius": 1560.8,
+  "spherical": true,
+  "layers": [
+    {
+      "num": 0,
+      "name": "ice_shell_upper",
+      "top": {
+        "depth": 0.0,
+        "vp": 4.0,
+        "vs": 2.0,
+        "rho": 1.0
+      },
+      "bot": {
+        "depth": 20.0,
+        "vp": 4.0,
+        "vs": 2.0,
+        "rho": 1.0
+      }
+    },
+    {
+      "num": 1,
+      "name": "liquid_water_ocean",
+      "note": "Liquid layer: Vs=0 indicates no shear wave propagation",
+      "top": {
+        "depth": 20.0,
+        "vp": 1.5,
+        "vs": 0.0,
+        "rho": 1.0
+      },
+      "bot": {
+        "depth": 140.0,
+        "vp": 1.8,
+        "vs": 0.0,
+        "rho": 1.0
+      }
+    },
+    {
+      "num": 2,
+      "name": "silicate_mantle_upper",
+      "top": {
+        "depth": 140.0,
+        "vp": 8,
+        "vs": 4.5,
+        "rho": 3.5
+      },
+      "bot": {
+        "depth": 1170.0,
+        "vp": 8,
+        "vs": 4.5,
+        "rho": 3.5
+      }
+    },
+    {
+      "num": 3,
+      "name": "metallic_core",
+      "note": "Iron-rich core; Vs~0 suggests partially or fully liquid outer core, high Vp consistent with metallic iron",
+      "top": {
+        "depth": 1170.0,
+        "vp": 6.0,
+        "vs": 3.2,
+        "rho": 8.0
+      },
+      "bot": {
+        "depth": 1560.8,
+        "vp": 6.0,
+        "vs": 3.2,
+        "rho": 8.0
+      }
+    }
+  ]
+}
