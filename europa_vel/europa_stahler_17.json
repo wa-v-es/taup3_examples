@@ -1,7 +1,7 @@
 {
-  "modelName": "europa_interior",
-  "radiusOfEuropa": 1560.8,
-  "namedDiscontinuities": [
+  "modelName": "europa_stahler",
+  "radiusOfEarth": 1560.8,
+  "nameddisons": [
     {
       "name": "ice_ocean_boundary",
       "depth": 20.0
@@ -38,7 +38,6 @@
     {
       "num": 1,
       "name": "liquid_water_ocean",
-      "note": "Liquid layer: Vs=0 indicates no shear wave propagation",
       "top": {
         "depth": 20.0,
         "vp": 1.5,
@@ -71,7 +70,6 @@
     {
       "num": 3,
       "name": "metallic_core",
-      "note": "Iron-rich core; Vs~0 suggests partially or fully liquid outer core, high Vp consistent with metallic iron",
       "top": {
         "depth": 1170.0,
         "vp": 6.0,

@@ -17,13 +17,17 @@ modelname = 'prem'
 # taup velmerge --mod prem  --asjson
 import taup
 
-with open('iasp.json', 'r') as file:
+with open('europa_stahler_17.json', 'r') as file:
     data = json.load(file)
 
-print(json.dumps(data, indent=4))
-data['layers']=data['layers'][:5]
+# print(json.dumps(data, indent=4))
+# data['layers']=data['layers'][:5]
 
-sys.exit()
+# sys.exit()
 with taup.TauPServer(taup_path=taup_path) as taupserver:
+    taupserver.timeout=10
     #Distance query to get garc from earthquake to station
-    params = taup.DistazQuery()
+    params = taup.TimeQuery()
+    params.velocitymodeltext('europa_stahler_17.json')
+    params.phase('P')
+    svg = params.calc(taupserver)
