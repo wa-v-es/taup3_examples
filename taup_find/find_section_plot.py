@@ -117,15 +117,15 @@ for tr in st_bin:#stream_all[::4]
     t = tr.times(reftime=starttime)
     ax.plot(t, 1.5*tr.data/tr.data.max() + tr.stats.distance,lw=.55,c='white')
 
-for curve in jsoncurve.curves:
-    # if curve.label[0]=='p': #useful for shallow eartquakes as depth phases are not well seperated!
-    #     continue
-    if curve.label[-1] in ['s','S']: # phases with last leg as S wave
-        for seg in curve.segments:
-            ax.plot(seg.y, seg.x,lw=.35,c='lightgreen',alpha=.75,zorder=2)
-    else:
-        for seg in curve.segments:
-            ax.plot(seg.y, seg.x,lw=.35,c='lightpink',alpha=.75,zorder=2)
+# for curve in jsoncurve.curves:
+#     # if curve.label[0]=='p': #useful for shallow eartquakes as depth phases are not well seperated!
+#     #     continue
+#     if curve.label[-1] in ['s','S']: # phases with last leg as S wave
+#         for seg in curve.segments:
+#             ax.plot(seg.y, seg.x,lw=.35,c='lightgreen',alpha=.75,zorder=2)
+#     else:
+#         for seg in curve.segments:
+#             ax.plot(seg.y, seg.x,lw=.35,c='lightpink',alpha=.75,zorder=2)
 
 
 ax.xaxis.set_minor_locator(MultipleLocator(250))
@@ -143,7 +143,7 @@ plt.gca().invert_yaxis()
 ax.yaxis.grid(False)
 # fig.savefig('fiji_55deg_Z.png', dpi=500, pad_inches=0.4)#bbox_inches='tight',
 plt.show()
-sys.exit()
+# sys.exit()
 
 ### sub-plot for zoom in section plot for time: 1800-3200sec!
 for curve in jsoncurve_subset.curves:
@@ -171,7 +171,10 @@ for arr in  jsonfinds_small['arrivals']:
         else:
             ax.text(arr['time'],98-i,arr['phase'],bbox={'facecolor': 'white', 'alpha': 0.85, 'pad': 1},horizontalalignment='center', color='palevioletred',fontsize=13)
             i=i-2
-
+plt.gca().invert_yaxis()
+ax.yaxis.set_label_position("right")
+ax.yaxis.tick_right()
+plt.title("")
 sys.exit()
 fig.savefig('fiji_55deg_Z_max5_time.png', dpi=500, pad_inches=0.4)
 # bin/taup find --max 3 --evdepth 600 --exclude 20,210,moho,410,660 --pwaveonly --mod iasp91 --time 2400 2600 --showrayparam --deg 100
