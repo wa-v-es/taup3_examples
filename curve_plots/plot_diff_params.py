@@ -48,7 +48,8 @@ strike,dip,rake=nodal_plane.strike,nodal_plane.dip,nodal_plane.rake
 yAxis = ['time',"rayparamdeg", "turndepth", "amppsv", "refltran","attenuation"]
 cl=['teal','indianred','slateblue']
 vel_mod='ak135fcont'
-phase_list=['ScP','S^660P','PKKP'] #Pcp^660P,Pcpv660P
+phase_list=['Smp','ScSP','PKKP'] #Pcp^660P,Pcpv660P
+### Scs^660P,ScSP,SP,ScSP,Scs^660P
 plt.ion()
 fig, axs = plt.subplots(2, 3,figsize=(15, 10),sharex=False,sharey=False)
 # sns.set_style("whitegrid")
@@ -84,7 +85,7 @@ for ax in [ax3,ax6]:
     ax.yaxis.tick_right()
 ax6.legend()
 
-# plt.savefig('attributes_june10.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
+# plt.savefig('attributes_june12.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
 
 ###
 

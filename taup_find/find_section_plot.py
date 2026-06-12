@@ -154,7 +154,7 @@ for curve in jsoncurve_subset.curves:
         for seg in curve.segments:
             ax.plot(seg.y, seg.x,lw=.85,c='lightpink',ls='-',alpha=.95,zorder=2)
 
-ax.set_xlim(1800,3200)
+ax.set_xlim(1800,3199)
 ax.set_ylim(80,125)
 ax.xaxis.set_minor_locator(MultipleLocator(100))
 ax.xaxis.set_major_locator(MultipleLocator(200))
@@ -172,11 +172,11 @@ for arr in  jsonfinds_small['arrivals']:
             ax.text(arr['time'],98-i,arr['phase'],bbox={'facecolor': 'white', 'alpha': 0.85, 'pad': 1},horizontalalignment='center', color='palevioletred',fontsize=13)
             i=i-2
 plt.gca().invert_yaxis()
-ax.yaxis.set_label_position("right")
-ax.yaxis.tick_right()
+# ax.yaxis.set_label_position("right")
+# ax.yaxis.tick_right()
 plt.title("")
 sys.exit()
-fig.savefig('fiji_55deg_Z_max5_time.png', dpi=500, pad_inches=0.4)
+# fig.savefig('fiji_55deg_Z_max5_time.png', dpi=500, pad_inches=0.4)
 # bin/taup find --max 3 --evdepth 600 --exclude 20,210,moho,410,660 --pwaveonly --mod iasp91 --time 2400 2600 --showrayparam --deg 100
 #######
 for arr in jsonfinds_small['arrivals']:
