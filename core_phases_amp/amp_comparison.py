@@ -4,7 +4,6 @@ import numpy as np
 import taup
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import numpy as np
 import os
 import sys
 import seaborn as sns
@@ -38,8 +37,9 @@ mpl.rcParams.update({'font.size': 14.5})
 # model="prem" # or 'ak135fcont'
 # M 8.2 - 2018 Fiji Earthquake #
 # https://earthquake.usgs.gov/earthquakes/eventpage/us1000gcii/executive
+# https://earthquake.usgs.gov/earthquakes/eventpage/us6000m52p
 # 2018-08-19 00:19:40 (UTC)18.113°S 178.153°W 600.0 km depth
-eventdepth=600
+eventdepth=607
 phases=['PKP','PKIKP','SKIKS','PKJKP','SKJKS']
 phases=['PKP','PKIKP','PKJKP']
 
