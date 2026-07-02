@@ -66,7 +66,7 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
     params.mw(8.2)
     # params.phase(phases)
     # params.strikediprake([18,69,-94])# fiji
-    params.strikediprake([17,7,-62])# 17°	7°	-62 Brazio
+    params.strikediprake(17,7,-62)# 17°	7°	-62 Brazio
     # params.az(60)
     dist=210
     params.degree(dist)
