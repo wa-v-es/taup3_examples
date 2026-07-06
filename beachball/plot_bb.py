@@ -11,6 +11,15 @@ from obspy.imaging.beachball import beach
 from matplotlib.colors import LinearSegmentedColormap
 # from cmcrameri import cm
 
+def to_xyr(takeoff,azimuth):
+    theta = np.radians(takeoff)
+    phi = np.radians(azimuth)
+
+    r = np.sqrt(2) * np.sin(theta / 2)
+    x = r * np.sin(phi)
+    y = r * np.cos(phi)
+
+    return r,x,y
 
 taup_path="~/Research/sct_wat/TauP/build/install/TauP/bin/taup"
 mpl.rcParams.update({'font.size': 13})
@@ -26,7 +35,7 @@ eventdepth=607
 params = taup.BeachballQuery()
 dist=210
 # dist=-150
-azi=90
+azi=0
 clip= False
 
 with taup.TauPServer(taup_path=taup_path) as taupserver:
@@ -35,7 +44,7 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
     params.phase(phases)
     params.degree(dist)
     params.az(azi)
-
+    params.mw(8.2)
     # params.station(*sta)
     params.strikediprake(strike,dip,rake)
     cmdLine = params.asCommandLine(taupserver)
@@ -44,10 +53,18 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
 
 r_phases=[]
 for arr in BB.arrivals:
-    take_off_rad=np.radians(arr.takeoff)
-    r_ph=np.sqrt(2) * np.sin(take_off_rad / 2)
+    r_ph,_,_= to_xyr(arr.takeoff,0)
+    # take_off_rad=np.radians(arr.takeoff)
+    # r_ph=np.sqrt(2) * np.sin(take_off_rad / 2)
     r_phases.append([r_ph,arr.phase])
+
 print(r_phases)
+
+N,P,T=BB.nptAxis.n,BB.nptAxis.p,BB.nptAxis.t
+
+N_r,N_x,N_y=to_xyr(N.takeoff,N.az)
+P_r,P_x,P_y=to_xyr(P.takeoff,P.az)
+T_r,T_x,T_y=to_xyr(T.takeoff,T.az)
 
 ####
 # sys.exit()
@@ -56,12 +73,7 @@ azimuth=np.asarray([list[1] for list in BB.radiationPattern])
 P_amp=np.asarray([list[2] for list in BB.radiationPattern])
 
 ##
-theta = np.radians(takeoff)
-phi = np.radians(azimuth)
-
-r = np.sqrt(2) * np.sin(theta / 2)
-x = r * np.sin(phi)
-y = r * np.cos(phi)
+r,x,y= to_xyr(takeoff,azimuth)
 
 N = 500
 gx = np.linspace(-1.02, 1.02, N)
@@ -70,6 +82,7 @@ GX, GY = np.meshgrid(gx, gy)
 
 GZ = griddata((x, y),P_amp,(GX, GY),method='linear')
 
+plt.ion()
 fig, ax = plt.subplots(figsize=(6,6))
 clip_c = plt.Circle((0, 0), 0.5, transform=ax.transData)
 levels = np.linspace(-np.nanmax(np.abs(GZ)), np.nanmax(np.abs(GZ)),51)
@@ -93,7 +106,14 @@ ax.add_patch(plt.Circle((0,0),r_phases[3][0],fill=False,lw=1.75,ls='--',color='i
 
 # ax.plot(xP, yP, 'ko', ms=7)
 # ax.plot(xT, yT, 'wo', ms=7, mec='k')
-# plt.scatter(dist, t_diff, marker='o', alpha=1,s=75, color=colors[i],zorder=10)#,label=phase)
+
+plt.scatter(P_x,P_y, marker='o', alpha=1,s=75, color='black',zorder=10)#,label=phase)
+plt.scatter(T_x,T_y, marker='o', alpha=1,s=75, color='maroon',zorder=10)#,label=phase)
+
+ax.text(P_x,P_y+.05, 'P', ha='center', va='bottom', color='black',fontweight='light')
+ax.text(T_x,T_y+.05, 'T', ha='center', va='bottom', color='maroon',fontweight='light')
+
+
 # plt.colorbar(cf,label='P amplitude')
 title = f" Strike = {strike}°   Dip = {dip}°   Rake = {rake}°"
 ax.set_title(title, pad=12)
@@ -119,6 +139,6 @@ else:
 plt.legend(loc='lower right',fontsize='13')
 
 ax.axis('off')
-plt.savefig('bb_amp_phases_d210.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
+# plt.savefig('bb_amp_phases_d210.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
 
 plt.show()
