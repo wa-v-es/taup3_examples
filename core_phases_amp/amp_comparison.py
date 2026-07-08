@@ -63,22 +63,22 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
     # params.station(*sta)
     # params.degree(np.arange(125,136,10))
     params.amp(True)
-    params.mw(8.2)
+    params.mw(6.6)
     # params.phase(phases)
     # params.strikediprake([18,69,-94])# fiji
     params.strikediprake(17,7,-62)# 17°	7°	-62 Brazio
-    # params.az(60)
-    dist=210
-    params.degree(dist)
+    params.az(0)
+    # dist=210
+    # params.degree(dist)
     phase_ratios = defaultdict(list)
     # TimeResult = params.calc(taupserver)
     # sys.exit()
     for i,phase in enumerate(phases):
         j=0
-        # for dist in np.arange(60.0,250,2.5):
-        for az in np.arange(0.0,360,6):
-            params.az(az)
-            # params.degree([dist])
+        for dist in np.arange(60.0,250,2.5):
+        # for az in np.arange(0.0,360,6):
+            # params.az(az)
+            params.degree([dist])
             params.phase(phase)
             # for phase, amp in grouped.items():
             TimeResult = params.calc(taupserver)
@@ -87,10 +87,10 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
                 continue
             if amps[phase]!=0:
                 if j==0:
-                    plt.scatter(az, amps[phase], marker='X', alpha=.8,s=45, color=colors[i],zorder=10,label=phase)
+                    plt.scatter(dist, amps[phase], marker='X', alpha=.8,s=45, color=colors[i],zorder=10,label=phase)
                     j=+1
                 else:
-                    plt.scatter(az, amps[phase], marker='X', alpha=.8,s=45, color=colors[i],zorder=10)
+                    plt.scatter(dist, amps[phase], marker='X', alpha=.8,s=45, color=colors[i],zorder=10)
 
 
 #             if amps['PKJKP']!=0 and amps['PKIKP']!=0:# and amps['PKP']!=0:
@@ -111,13 +111,13 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
 ax.set_yscale("log")
 ax.xaxis.set_minor_locator(MultipleLocator(20))
 ax.xaxis.set_major_locator(MultipleLocator(40))
-# ax.axvline(x=210,ls='--',lw=1.5,c='darkgrey',zorder=1)
+ax.axvline(x=210,ls='--',lw=1.5,c='darkgrey',zorder=1)
 # plt.legend(loc='upper left',fontsize='14')
-plt.legend(loc='lower right',fontsize='15')
+# plt.legend(loc='lower right',fontsize='15')
 
 plt.ylabel("Amplitude ($P_{sv}$)")#PKIKP/ PKJKP
-# plt.xlabel("Distance ($^\\circ$)")
-plt.xlabel("Azimuth ($^\\circ$)")
+plt.xlabel("Distance ($^\\circ$)")
+# plt.xlabel("Azimuth ($^\\circ$)")
 
 # plt.title(f"Phase amp; Δ20")
 # plt.title(f"Inner core P vs S amp for Mw 8")
@@ -126,7 +126,7 @@ plt.xlabel("Azimuth ($^\\circ$)")
 
 plt.tight_layout()
 # plt.savefig('mx8_fiji_5phs_az_155.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
-plt.savefig('mx8.2_3phases_dist_210.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
+# plt.savefig('mx6.6_3phases_dist_210.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
 # plt.savefig('mx8.2_3phases.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
 
 # plt.show()

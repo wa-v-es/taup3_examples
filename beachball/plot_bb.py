@@ -36,7 +36,7 @@ params = taup.BeachballQuery()
 dist=210
 # dist=-150
 azi=0
-clip= False
+clip= True
 
 with taup.TauPServer(taup_path=taup_path) as taupserver:
     params.model('prem')
@@ -44,7 +44,7 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
     params.phase(phases)
     params.degree(dist)
     params.az(azi)
-    params.mw(8.2)
+    params.mw(6.6)
     # params.station(*sta)
     params.strikediprake(strike,dip,rake)
     cmdLine = params.asCommandLine(taupserver)
@@ -103,30 +103,26 @@ ax.add_patch(plt.Circle((0,0),r_phases[1][0],fill=False,lw=1.75,ls='--',color='m
 ax.add_patch(plt.Circle((0,0),r_phases[0][0],fill=False,lw=1.75,ls='--',color='cadetblue',label=r_phases[0][1]))
 ax.add_patch(plt.Circle((0,0),r_phases[3][0],fill=False,lw=1.75,ls='--',color='indianred',label=r_phases[3][1]))
 
+#plot P and T axis
+plt.scatter(P_x,P_y, marker='o', alpha=1,s=75, color='maroon',zorder=10)#,label=phase)
+# plt.scatter(T_x,T_y, marker='o', alpha=1,s=75, color='black',zorder=10)#,label=phase)
 
-# ax.plot(xP, yP, 'ko', ms=7)
-# ax.plot(xT, yT, 'wo', ms=7, mec='k')
-
-plt.scatter(P_x,P_y, marker='o', alpha=1,s=75, color='black',zorder=10)#,label=phase)
-plt.scatter(T_x,T_y, marker='o', alpha=1,s=75, color='maroon',zorder=10)#,label=phase)
-
-ax.text(P_x,P_y+.05, 'P', ha='center', va='bottom', color='black',fontweight='light')
-ax.text(T_x,T_y+.05, 'T', ha='center', va='bottom', color='maroon',fontweight='light')
-
+ax.text(P_x,P_y+.05, 'P', ha='center', va='bottom', color='maroon',fontweight='light')
+# ax.text(T_x,T_y+.05, 'T', ha='center', va='bottom', color='black',fontweight='light')
 
 # plt.colorbar(cf,label='P amplitude')
 title = f" Strike = {strike}°   Dip = {dip}°   Rake = {rake}°"
-ax.set_title(title, pad=12)
+# ax.set_title(title, pad=12)
 
 if clip:
     offset = .52
 else:
     offset = 1.02
 
-ax.text(0,  offset, 'N', ha='center', va='bottom', fontweight='bold')
-ax.text(offset, 0, 'E', ha='left',   va='center', fontweight='bold')
-ax.text(0, -offset, 'S', ha='center', va='top'  , fontweight='bold')
-ax.text(-offset, 0, 'W', ha='right',  va='center', fontweight='bold')
+# ax.text(0,  offset, 'N', ha='center', va='bottom', fontweight='bold')
+# ax.text(offset, 0, 'E', ha='left',   va='center', fontweight='bold')
+# ax.text(0, -offset, 'S', ha='center', va='top'  , fontweight='bold')
+# ax.text(-offset, 0, 'W', ha='right',  va='center', fontweight='bold')
 ax.set_aspect('equal')
 
 if clip:
@@ -140,5 +136,7 @@ plt.legend(loc='lower right',fontsize='13')
 
 ax.axis('off')
 # plt.savefig('bb_amp_phases_d210.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
+# plt.savefig('bb_Mw6.6Brazil.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
+
 
 plt.show()
