@@ -38,28 +38,35 @@ strike,dip,rake=nodal_plane.strike,nodal_plane.dip,nodal_plane.rake
 
 """
 #radian, radian180, degree, degree180, kilometer, kilometer180, rayparamrad, rayparamdeg, rayparamkm,
- time, tau, takeoffangle, incidentangle, turndepth, dpddelta, dpddeg, amp, amppsv, ampsh, phase,
+ time, tau, takeoffangle, incidentangle, maxdepth, dpddelta, dpddeg, amp, amppsv, ampsh, phase,
  phasepsv, phasesh, phasedeg, phasedegpsv, phasedegsh, unwrapphasedeg, unwrapphasedegpsv, unwrapphasedegsh,
  geospread, refltran, refltranpsv, refltransh, index, tstar, attenuation, energygeospread, pathlength,
  radiation, radiationpsv, radiationsh, intcaustic
 """
 
-yAxis = ['time',"rayparamdeg", "turndepth", "amppsv", "refltran","attenuation"]
-cl=['teal','indianred','slateblue']
+# geospread is spiking
+yAxis = ['time',"rayparamdeg", "maxdepth",'pathlength', "amppsv", "refltran","attenuation",'radiationpsv']
+# cl=['teal','indianred']#,'slateblue']
+cl=['slateblue']#,'slateblue']
+
 vel_mod='ak135fcont'
 phase_list=['Smp','ScSP','PKKP'] #Pcp^660P,Pcpv660P
+phase_list=['PP'] #Pcp^660P,Pcpv660P
+
 ### Scs^660P,ScSP,SP,ScSP,Scs^660P
 plt.ion()
-fig, axs = plt.subplots(2, 3,figsize=(15, 10),sharex=False,sharey=False)
+fig, axs = plt.subplots(2, 4,figsize=(15, 10),sharex=False,sharey=False)
 # sns.set_style("whitegrid")
 sns.set_style("whitegrid",{"axes.facecolor": "ghostwhite","grid.color": ".6", "grid.linestyle": ":"})
 ax1 = axs[0, 0]
 ax2 = axs[0, 1]
 ax3 = axs[0, 2]
-ax4 = axs[1, 0]
-ax5 = axs[1, 1]
-ax6 = axs[1, 2]
-axx=[ax1,ax2,ax3,ax4,ax5,ax6]
+ax4 = axs[0, 3]
+ax5 = axs[1, 0]
+ax6 = axs[1, 1]
+ax7 = axs[1, 2]
+ax8 = axs[1, 3]
+axx=[ax1,ax2,ax3,ax4,ax5,ax6,ax7,ax8]
 with taup.TauPServer(taup_path=taup_path) as taupserver:
     params = taup.CurveQuery()
     params.model(vel_mod)
@@ -68,7 +75,7 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
     params.sourcedepth(eq_depth)
     params.xaxis('degree')
     params.strikediprake(strike,dip,rake)
-    params.az(45)
+    params.az(0)
     for j, yAtt in enumerate(yAxis):
         for i, phase in enumerate(phase_list):
             params.yaxis(yAtt)
@@ -79,10 +86,10 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
             plot_attribute(axx[j],jsonCurve,cl[i])
 
 ax6.set_xlabel('Distance ($^\\circ$)')
-for ax in [ax3,ax6]:
-    ax.yaxis.set_label_position("right")
-    ax.yaxis.tick_right()
-ax6.legend()
+# for ax in [ax3,ax6]:
+#     ax.yaxis.set_label_position("right")
+#     ax.yaxis.tick_right()
+ax8.legend()
 
 # plt.savefig('attributes_june12.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
 
