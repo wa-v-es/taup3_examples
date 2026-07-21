@@ -20,7 +20,7 @@ def plot_attribute(ax,jsonCurve,cl):
             ax.set_ylabel(curve.y)
 ######
 taup_path="~/Research/sct_wat/TauP/build/install/TauP/bin/taup"
-mpl.rcParams.update({'font.size': 14.5})
+mpl.rcParams.update({'font.size': 15.5})
 ###
 client = Client("USGS")
 eq_id='us6000m31m' # afgan eq
@@ -55,9 +55,9 @@ phase_list=['PP'] #Pcp^660P,Pcpv660P
 
 ### Scs^660P,ScSP,SP,ScSP,Scs^660P
 plt.ion()
-fig, axs = plt.subplots(2, 4,figsize=(15, 10),sharex=False,sharey=False)
+fig, axs = plt.subplots(2, 4,figsize=(15, 10),sharex=False,sharey=False,constrained_layout=True)
 # sns.set_style("whitegrid")
-sns.set_style("whitegrid",{"axes.facecolor": "ghostwhite","grid.color": ".6", "grid.linestyle": ":"})
+sns.set_style("whitegrid",{"axes.facecolor": "ghostwhite","grid.color": ".4", "grid.linestyle": ":"})
 ax1 = axs[0, 0]
 ax2 = axs[0, 1]
 ax3 = axs[0, 2]
@@ -85,13 +85,27 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
             print('command line prompt:',cmdLine)
             plot_attribute(axx[j],jsonCurve,cl[i])
 
-ax6.set_xlabel('Distance ($^\\circ$)')
+ax8.set_xlabel('Distance ($^\\circ$)')
+xmin, xmax = 50, 200
+for ax in axx:
+    ax.set_xlim(50,200)
+    for line in ax.lines:
+        x = line.get_xdata()
+        y = line.get_ydata()
+
+        mask = (x >= xmin) & (x <= xmax)
+        if np.any(mask):
+            ax.set_ylim(np.nanmin(y[mask]), np.nanmax(y[mask]))
+
+    ax.set_xlim(xmin, xmax)
+
+
 # for ax in [ax3,ax6]:
 #     ax.yaxis.set_label_position("right")
 #     ax.yaxis.tick_right()
 ax8.legend()
 
-# plt.savefig('attributes_june12.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
+plt.savefig('attributes_july20.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
 
 ###
 
