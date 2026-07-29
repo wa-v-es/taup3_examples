@@ -20,7 +20,7 @@ def plot_attribute(ax,jsonCurve,cl):
             ax.set_ylabel(curve.y)
 ######
 taup_path="~/Research/sct_wat/TauP/build/install/TauP/bin/taup"
-mpl.rcParams.update({'font.size': 15.5})
+mpl.rcParams.update({'font.size': 16})
 ###
 client = Client("USGS")
 eq_id='us6000m31m' # afgan eq
@@ -84,8 +84,16 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
             cmdLine = params.asCommandLine(taupserver)
             print('command line prompt:',cmdLine)
             plot_attribute(axx[j],jsonCurve,cl[i])
+ax1.set_ylabel('Time (s)')
+ax2.set_ylabel('Rayparam (s/$^\circ$)')
+ax3.set_ylabel('Max depth (km)')
+ax4.set_ylabel('Path length (km)')
+ax5.set_ylabel('Amplitude P$_{sv}$ (m)')
+ax6.set_ylabel('Reflection-transmission coeff.')
+ax7.set_ylabel('Attenuation')
+ax8.set_ylabel('Radiation P$_{sv}$')
 
-ax8.set_xlabel('Distance ($^\\circ$)')
+ax8.set_xlabel('Distance ($^\circ$)')
 xmin, xmax = 50, 200
 for ax in axx:
     ax.set_xlim(50,200)
@@ -105,7 +113,7 @@ for ax in axx:
 #     ax.yaxis.tick_right()
 ax8.legend()
 
-plt.savefig('attributes_july20.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
+plt.savefig('attributes_july28.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
 
 ###
 
