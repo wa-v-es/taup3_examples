@@ -29,7 +29,7 @@ def get_unique_phases(jsonfinds_small):
     return findsphases
 ####
 taup_path="~/Research/sct_wat/TauP/build/install/TauP/bin/taup"
-mpl.rcParams.update({'font.size': 15.5})
+mpl.rcParams.update({'font.size': 16.5})
 #Eq deets
 starttime= UTCDateTime('2018-08-19T00:19:40') #Fiji
 eq_lat,eq_long,eq_depth=-18.1125,-178.1530,600 #Fiji
@@ -141,8 +141,8 @@ ax.set_ylim(55,162)
 plt.title(f"Fiji August 2018 Mw 8.2")
 plt.gca().invert_yaxis()
 ax.yaxis.grid(False)
-# fig.savefig('fiji_55deg_Z.png', dpi=500, pad_inches=0.4)#bbox_inches='tight',
-plt.show()
+# fig.savefig('fiji_55deg_Z_max3_.png', dpi=500, pad_inches=0.4)#bbox_inches='tight',
+# plt.show()
 # sys.exit()
 
 ### sub-plot for zoom in section plot for time: 1800-3200sec!
