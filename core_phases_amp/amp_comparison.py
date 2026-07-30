@@ -1,5 +1,5 @@
 # using the taup's amplitude feature, compares amplitude of core phases!
-# generates Figure 2 of Taup 3.2, 2026, paper.
+# generates Figure 2 of Taup 3.2, 2026, paper. Use 'plot_A' switch to either plot A or B.
 # Shubh Agrawal
 # USC, July 2026
 
@@ -39,9 +39,10 @@ mpl.rcParams.update({'font.size': 14.5})
 # https://earthquake.usgs.gov/earthquakes/eventpage/us1000gcii/executive
 # https://earthquake.usgs.gov/earthquakes/eventpage/us6000m52p
 eventdepth=607
-phases=['PKP','PKIKP','SKIKS','PKJKP','SKJKS']
+# phases=['PKP','PKIKP','SKIKS','PKJKP','SKJKS']
 phases=['PKP','PKIKP','PKJKP']
 
+plot_A= False
 plt.ion()
 plt.figure(figsize=(14, 5))
 ax = plt.axes()
@@ -57,67 +58,67 @@ params = taup.TimeQuery()
 with taup.TauPServer(taup_path=taup_path) as taupserver:
     params.model('prem')
     params.sourcedepth(eventdepth)
-    # params.station(*sta)
-    # params.degree(np.arange(125,136,10))
+    if plot_A:
+        params.az(80)
+        markr='*'
+    else:
+        dist=210
+        params.degree(dist)
+        markr='X'
+
     params.amp(True)
     params.mw(6.6)
-    # params.phase(phases)
-    params.strikediprake(17,7,-62)# 17°	7°	-62 Brazio
-    params.az(0)
-    # dist=210
-    # params.degree(dist)
+    params.strikediprake(17,7,-62)# 17°	7° -62 Brazio
     phase_ratios = defaultdict(list)
-    # TimeResult = params.calc(taupserver)
     for i,phase in enumerate(phases):
+        params.phase(phase)
         j=0
-        for dist in np.arange(60.0,250,2.5):
-        # for az in np.arange(0.0,360,6):
-            # params.az(az)
-            params.degree([dist])
-            params.phase(phase)
-            # for phase, amp in grouped.items():
-            TimeResult = params.calc(taupserver)
-            amps = get_dict_amps(TimeResult)
-            if len(amps)== 0:
-                continue
-            if amps[phase]!=0:
-                if j==0:
-                    plt.scatter(dist, amps[phase], marker='X', alpha=.8,s=45, color=colors[i],zorder=10,label=phase)
-                    j=+1
-                else:
-                    plt.scatter(dist, amps[phase], marker='X', alpha=.8,s=45, color=colors[i],zorder=10)
+        if plot_A:
+            for dist in np.arange(60.0,250,2.5):
+                params.degree([dist])
+                TimeResult = params.calc(taupserver)
+                amps = get_dict_amps(TimeResult)
+                if len(amps)== 0:
+                    continue
+                if amps[phase]!=0:
+                    if j==0:
+                        plt.scatter(dist, amps[phase], marker=markr, alpha=.8,s=45, color=colors[i],zorder=10,label=phase)
+                        j=+1
+                    else:
+                        plt.scatter(dist, amps[phase], marker=markr, alpha=.8,s=45, color=colors[i],zorder=10)
+        else:
+            for az in np.arange(0.0,360,6):
+                params.az([az])
+                TimeResult = params.calc(taupserver)
+                amps = get_dict_amps(TimeResult)
+                if len(amps)== 0:
+                    continue
+                if amps[phase]!=0:
+                    if j==0:
+                        plt.scatter(az, amps[phase], marker=markr, alpha=.8,s=45, color=colors[i],zorder=10,label=phase)
+                        j=+1
+                    else:
+                        plt.scatter(az, amps[phase], marker=markr, alpha=.8,s=45, color=colors[i],zorder=10)
 
-
-#             if amps['PKJKP']!=0 and amps['PKIKP']!=0:# and amps['PKP']!=0:
-#                 ratio=np.round(amps['PKJKP']/amps['PKIKP'],5)
-#                 # print(ratio)
-#                 dists.append(dist)
-#                 ratios.append(amps['PKIKP'] / amps['PKJKP'])
-#                 amps_J.append(amps['PKJKP'])
-#                 amps_I.append(amps['PKIKP'])
-#                 amps_K.append(amps['PKP'])
-#
-# plt.plot(dists, amps_K,c='teal',marker='X',markerfacecolor='cadetblue',markersize=12,markeredgewidth=1.15,linestyle='-',linewidth=1.25,alpha=.65,label='PKP')#
-# plt.plot(dists, amps_I,c='dodgerblue',marker='X',markerfacecolor='skyblue',markersize=12,markeredgewidth=1.15,linestyle='-',linewidth=1.25,alpha=.65,label='PKIKP')#
-# plt.plot(dists, amps_J,c='indigo',marker='X',markerfacecolor='mediumpurple',markersize=12,markeredgewidth=1.15,linestyle='-',linewidth=1.25,alpha=.65,label='PKJKP')#
-
-
-# plt.scatter(dists, ratios, marker='X', alpha=.9,s=99, color='palevioletred',zorder=10)
 ax.set_yscale("log")
 ax.xaxis.set_minor_locator(MultipleLocator(20))
 ax.xaxis.set_major_locator(MultipleLocator(40))
-ax.axvline(x=210,ls='--',lw=1.5,c='darkgrey',zorder=1)
 # plt.legend(loc='upper left',fontsize='14')
-# plt.legend(loc='lower right',fontsize='15')
+plt.legend(loc='lower right',fontsize='15')
 
 plt.ylabel("Amplitude ($P_{sv}$)")#PKIKP/ PKJKP
-plt.xlabel("Distance ($^\\circ$)")
-# plt.xlabel("Azimuth ($^\\circ$)")
-
-
-
+if plot_A:
+    plt.xlabel("Distance ($^\\circ$)")
+    ax.axvline(x=210,ls='--',lw=1.5,c='darkgrey',zorder=1)
+else:
+    plt.xlabel("Azimuth ($^\\circ$)")
+    ax.axvline(x=80,ls='--',lw=1.5,c='darkgrey',zorder=1)
 plt.tight_layout()
-# plt.savefig('mx6.6_3phases_dist_210.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
-# plt.savefig('mx8.2_3phases.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
+
+# sys.exit()
+if plot_A:
+    plt.savefig('mx6.6_3phases_az80.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
+else:
+    plt.savefig('mx6.6_3phases_dist_210.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
 
 # plt.show()
