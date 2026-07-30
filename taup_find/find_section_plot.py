@@ -1,4 +1,6 @@
-# downloads sac files for an event#
+# uses downloaded sac files and inventory to create Figure 1 of Taup 3.2, 2026, paper.
+# Shubh Agrawal
+# USC, SC, July 2026
 from obspy import read, Stream, UTCDateTime,read_events
 from obspy.core.event import Origin, Catalog
 from obspy.core.inventory.inventory import read_inventory
@@ -37,10 +39,8 @@ endtime= starttime+7000
 ###
 inventory_big=read_inventory("inventory_big_fiji.xml")
 # # inventory_big.plot(label=False,color_per_network=True,resolution='i',continent_fill_color='honeydew',alpha=.5)
-# sys.exit()
 ### read eq data
 stream_all=read('sac_fiji_18/*.sac')
-# stream_all.filter('bandpass',freqmin=.01, freqmax=.1)
 stream_all.taper(type='cosine',max_percentage=.1)
 ### TAUP server
 modelname = 'iasp91'
@@ -62,7 +62,6 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
     params_f.max(3)
     params_f.sourcedepth(eq_depth)
     params_f.exclude('20,210,moho,410,660')
-    # params_f.pwaveonly()
     find_max3 = params_f.calcJson(taupserver)
     find_max3['foundphases'] = list(dict.fromkeys(find_max3['foundphases']))
     print('length of phases in entire window:',len(find_max3['foundphases']))
@@ -72,9 +71,7 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
     # taupserver.verbose = True
     params_f.max(5)
     params_f.time([1900,2900])
-    # params_f.deltatime([100])
     params_f.deg([98])
-    # params_f.showrayparam(True)
     params_f.rayparamdeg([7,25])
     jsonfinds_small = params_f.calcJson(taupserver)
     cmdLine = params_f.asCommandLine(taupserver)
@@ -95,7 +92,6 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
     params_c.phase(findsphases_subset)
     jsoncurve_subset = params_c.calc(taupserver)
 
-# sys.exit()
 ##
 stream_all.sort(['distance'],reverse=True)
 ####
@@ -117,6 +113,7 @@ for tr in st_bin:#stream_all[::4]
     t = tr.times(reftime=starttime)
     ax.plot(t, 1.5*tr.data/tr.data.max() + tr.stats.distance,lw=.55,c='white')
 
+#this bit needs to be commented while plotting B.
 # for curve in jsoncurve.curves:
 #     # if curve.label[0]=='p': #useful for shallow eartquakes as depth phases are not well seperated!
 #     #     continue
@@ -126,7 +123,6 @@ for tr in st_bin:#stream_all[::4]
 #     else:
 #         for seg in curve.segments:
 #             ax.plot(seg.y, seg.x,lw=.35,c='lightpink',alpha=.75,zorder=2)
-
 
 ax.xaxis.set_minor_locator(MultipleLocator(250))
 ax.xaxis.set_major_locator(MultipleLocator(1000))
@@ -172,16 +168,7 @@ for arr in  jsonfinds_small['arrivals']:
             ax.text(arr['time'],98-i,arr['phase'],bbox={'facecolor': 'white', 'alpha': 0.85, 'pad': 1},horizontalalignment='center', color='palevioletred',fontsize=13)
             i=i-2
 plt.gca().invert_yaxis()
-# ax.yaxis.set_label_position("right")
-# ax.yaxis.tick_right()
 plt.title("")
 sys.exit()
-# fig.savefig('fiji_55deg_Z_max5_time.png', dpi=500, pad_inches=0.4)
+# fig.savefig('fiji_55deg_Z_max5_time_.png', dpi=500, pad_inches=0.4)
 # bin/taup find --max 3 --evdepth 600 --exclude 20,210,moho,410,660 --pwaveonly --mod iasp91 --time 2400 2600 --showrayparam --deg 100
-#######
-for arr in jsonfinds_small['arrivals']:
-    # if arr['phase'][-1] in ['s','S']:
-    for phase in findsphases_subset:
-        if arr['phase']==phase:
-            print('phase:',phase,'rayP',arr['rayparam'])
-            continue

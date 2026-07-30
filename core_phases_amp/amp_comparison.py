@@ -1,4 +1,7 @@
-# using the taup's amptiude feature, compares amplitude of core phases!
+# using the taup's amplitude feature, compares amplitude of core phases!
+# generates Figure 2 of Taup 3.2, 2026, paper.
+# Shubh Agrawal
+# USC, July 2026
 
 import numpy as np
 import taup
@@ -33,12 +36,8 @@ def get_dict_amps(TimeResult):
     return grouped
 taup_path="~/Research/sct_wat/TauP/build/install/TauP/bin/taup"
 mpl.rcParams.update({'font.size': 14.5})
-
-# model="prem" # or 'ak135fcont'
-# M 8.2 - 2018 Fiji Earthquake #
 # https://earthquake.usgs.gov/earthquakes/eventpage/us1000gcii/executive
 # https://earthquake.usgs.gov/earthquakes/eventpage/us6000m52p
-# 2018-08-19 00:19:40 (UTC)18.113°S 178.153°W 600.0 km depth
 eventdepth=607
 phases=['PKP','PKIKP','SKIKS','PKJKP','SKJKS']
 phases=['PKP','PKIKP','PKJKP']
@@ -46,10 +45,8 @@ phases=['PKP','PKIKP','PKJKP']
 plt.ion()
 plt.figure(figsize=(14, 5))
 ax = plt.axes()
-# ax.set_facecolor("whitesmoke")#aliceblue
 ax.set_facecolor(to_rgba('darkseagreen', alpha=0.1))
 plt.style.use('ggplot')
-# plt.grid(which='both', linestyle='--', linewidth=0.5, alpha=0.5)
 dists = []
 ratios = []
 amps_J=[]
@@ -65,14 +62,12 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
     params.amp(True)
     params.mw(6.6)
     # params.phase(phases)
-    # params.strikediprake([18,69,-94])# fiji
     params.strikediprake(17,7,-62)# 17°	7°	-62 Brazio
     params.az(0)
     # dist=210
     # params.degree(dist)
     phase_ratios = defaultdict(list)
     # TimeResult = params.calc(taupserver)
-    # sys.exit()
     for i,phase in enumerate(phases):
         j=0
         for dist in np.arange(60.0,250,2.5):
@@ -119,13 +114,9 @@ plt.ylabel("Amplitude ($P_{sv}$)")#PKIKP/ PKJKP
 plt.xlabel("Distance ($^\\circ$)")
 # plt.xlabel("Azimuth ($^\\circ$)")
 
-# plt.title(f"Phase amp; Δ20")
-# plt.title(f"Inner core P vs S amp for Mw 8")
-# plt.title(f"Amp comparison for core phases for Mw 8.2 eq dist {dist}: prem")
 
 
 plt.tight_layout()
-# plt.savefig('mx8_fiji_5phs_az_155.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
 # plt.savefig('mx6.6_3phases_dist_210.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
 # plt.savefig('mx8.2_3phases.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
 

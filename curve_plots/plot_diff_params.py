@@ -1,4 +1,7 @@
-# ideas for comparing seismic attributes of phases
+## using taup curve, we compare different seismic attribitues.
+# creates Figure 4 of Taup 3.2, 2026, paper.
+# Shubh Agrawal
+# USC, July 2026
 ##
 import numpy as np
 import taup
@@ -15,15 +18,13 @@ from obspy.clients.fdsn import Client
 def plot_attribute(ax,jsonCurve,cl):
     for curve in jsonCurve.curves:
         for seg in curve.segments:
-            ax.plot(seg.x, seg.y,c=cl,linestyle='-',linewidth=1.5,alpha=.95,label=curve.label)#marker='X',markerfacecolor='skyblue',markersize=12,markeredgewidth=1.15,
-            # ax.set_xlabel('Distance ($^\\circ$)')
+            ax.plot(seg.x, seg.y,c=cl,linestyle='-',linewidth=1.5,alpha=.95,label=curve.label)
             ax.set_ylabel(curve.y)
 ######
 taup_path="~/Research/sct_wat/TauP/build/install/TauP/bin/taup"
 mpl.rcParams.update({'font.size': 16})
 ###
 client = Client("USGS")
-eq_id='us6000m31m' # afgan eq
 eq_id='us6000sasz' # Malaysia deep eq
 
 catalog = client.get_events(eventid=eq_id)
@@ -32,9 +33,6 @@ eq_lat,eq_long,eq_depth=origin.latitude,origin.longitude,origin.depth/1000
 eq_mw=catalog[0].magnitudes[0].mag
 nodal_plane=catalog[0].focal_mechanisms[0].nodal_planes['nodal_plane_1']
 strike,dip,rake=nodal_plane.strike,nodal_plane.dip,nodal_plane.rake
-# sys.exit()
-# https://earthquake.usgs.gov/earthquakes/eventpage/us6000m31m/executive# Afgan eq!
-# 336.498°N 70.601°E204.0 km depth
 
 """
 #radian, radian180, degree, degree180, kilometer, kilometer180, rayparamrad, rayparamdeg, rayparamkm,
@@ -44,19 +42,15 @@ strike,dip,rake=nodal_plane.strike,nodal_plane.dip,nodal_plane.rake
  radiation, radiationpsv, radiationsh, intcaustic
 """
 
-# geospread is spiking
 yAxis = ['time',"rayparamdeg", "maxdepth",'pathlength', "amppsv", "refltran","attenuation",'radiationpsv']
-# cl=['teal','indianred']#,'slateblue']
 cl=['slateblue']#,'slateblue']
 
 vel_mod='ak135fcont'
 phase_list=['Smp','ScSP','PKKP'] #Pcp^660P,Pcpv660P
 phase_list=['PP'] #Pcp^660P,Pcpv660P
 
-### Scs^660P,ScSP,SP,ScSP,Scs^660P
 plt.ion()
 fig, axs = plt.subplots(2, 4,figsize=(15, 10),sharex=False,sharey=False,constrained_layout=True)
-# sns.set_style("whitegrid")
 sns.set_style("whitegrid",{"axes.facecolor": "ghostwhite","grid.color": ".4", "grid.linestyle": ":"})
 ax1 = axs[0, 0]
 ax2 = axs[0, 1]
@@ -70,7 +64,6 @@ axx=[ax1,ax2,ax3,ax4,ax5,ax6,ax7,ax8]
 with taup.TauPServer(taup_path=taup_path) as taupserver:
     params = taup.CurveQuery()
     params.model(vel_mod)
-    # params.degree([np.arange(90.0,150,10)])
     params.mw(eq_mw)
     params.sourcedepth(eq_depth)
     params.xaxis('degree')
@@ -107,14 +100,6 @@ for ax in axx:
 
     ax.set_xlim(xmin, xmax)
 
-
-# for ax in [ax3,ax6]:
-#     ax.yaxis.set_label_position("right")
-#     ax.yaxis.tick_right()
 ax8.legend()
-
 plt.savefig('attributes_july28.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
-
-###
-
 ###

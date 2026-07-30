@@ -1,3 +1,8 @@
+# using taup beachball, plots P source-radiation pattern on Beachball.
+# creates Figure 3 of Taup 3.2, 2026, paper.
+# Shubh Agrawal
+# USC, July 2026
+
 import numpy as np
 import taup
 import matplotlib as mpl
@@ -9,7 +14,6 @@ from matplotlib.lines import Line2D
 from scipy.interpolate import griddata
 from obspy.imaging.beachball import beach
 from matplotlib.colors import LinearSegmentedColormap
-# from cmcrameri import cm
 
 def to_xyr(takeoff,azimuth):
     theta = np.radians(takeoff)
@@ -34,7 +38,6 @@ phases=['PKP','PKIKP','PKJKP']
 eventdepth=607
 params = taup.BeachballQuery()
 dist=210
-# dist=-150
 azi=0
 clip= True
 
@@ -54,8 +57,6 @@ with taup.TauPServer(taup_path=taup_path) as taupserver:
 r_phases=[]
 for arr in BB.arrivals:
     r_ph,_,_= to_xyr(arr.takeoff,0)
-    # take_off_rad=np.radians(arr.takeoff)
-    # r_ph=np.sqrt(2) * np.sin(take_off_rad / 2)
     r_phases.append([r_ph,arr.phase])
 
 print(r_phases)
@@ -67,7 +68,6 @@ P_r,P_x,P_y=to_xyr(P.takeoff,P.az)
 T_r,T_x,T_y=to_xyr(T.takeoff,T.az)
 
 ####
-# sys.exit()
 takeoff=np.asarray([list[0] for list in BB.radiationPattern])
 azimuth=np.asarray([list[1] for list in BB.radiationPattern])
 P_amp=np.asarray([list[2] for list in BB.radiationPattern])
@@ -89,8 +89,6 @@ levels = np.linspace(-np.nanmax(np.abs(GZ)), np.nanmax(np.abs(GZ)),51)
 cf = ax.contourf(GX,GY,GZ,levels=levels,cmap=cmap_bb,extend='both')
 if clip:
     cf.set_clip_path(clip_c)
-    # for c in cf.collections:
-    #     c.set_clip_path(clip)
     circle = plt.Circle((0,0),.5,fill=False,lw=.5,color='k')
 
 else:
