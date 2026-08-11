@@ -1,4 +1,5 @@
 # uses downloaded sac files and inventory to create Figure 1 of Taup 3.2, 2026, paper.
+# comment the sys.exit() around line 143 to plot 1B.
 # Shubh Agrawal
 # USC, SC, July 2026
 from obspy import read, Stream, UTCDateTime,read_events
@@ -113,16 +114,16 @@ for tr in st_bin:#stream_all[::4]
     t = tr.times(reftime=starttime)
     ax.plot(t, 1.5*tr.data/tr.data.max() + tr.stats.distance,lw=.55,c='white')
 
-#this bit needs to be commented while plotting B.
-# for curve in jsoncurve.curves:
-#     # if curve.label[0]=='p': #useful for shallow eartquakes as depth phases are not well seperated!
-#     #     continue
-#     if curve.label[-1] in ['s','S']: # phases with last leg as S wave
-#         for seg in curve.segments:
-#             ax.plot(seg.y, seg.x,lw=.35,c='lightgreen',alpha=.75,zorder=2)
-#     else:
-#         for seg in curve.segments:
-#             ax.plot(seg.y, seg.x,lw=.35,c='lightpink',alpha=.75,zorder=2)
+### this bit needs to be commented while plotting B.
+for curve in jsoncurve.curves:
+    # if curve.label[0]=='p': #useful for shallow eartquakes as depth phases are not well seperated!
+    #     continue
+    if curve.label[-1] in ['s','S']: # phases with last leg as S wave
+        for seg in curve.segments:
+            ax.plot(seg.y, seg.x,lw=.35,c='lightgreen',alpha=.75,zorder=2)
+    else:
+        for seg in curve.segments:
+            ax.plot(seg.y, seg.x,lw=.35,c='lightpink',alpha=.75,zorder=2)
 
 ax.xaxis.set_minor_locator(MultipleLocator(250))
 ax.xaxis.set_major_locator(MultipleLocator(1000))
@@ -139,9 +140,9 @@ plt.gca().invert_yaxis()
 ax.yaxis.grid(False)
 # fig.savefig('fiji_55deg_Z_max3_.png', dpi=500, pad_inches=0.4)#bbox_inches='tight',
 # plt.show()
-# sys.exit()
+sys.exit()
 
-### sub-plot for zoom in section plot for time: 1800-3200sec!
+### Fig1B. sub-plot for zoom in section plot for time: 1800-3200sec!
 for curve in jsoncurve_subset.curves:
     if curve.label[-1] in ['s','S']: # phases with last leg as S wave
         for seg in curve.segments:

@@ -1,4 +1,4 @@
-#downloads and saves ea data as sac files
+#downloads and saves Fiji eq data as sac files. Also saves the inventory!
 from obspy import read, Stream, UTCDateTime,read_events
 from obspy.core.event import Origin, Catalog
 from obspy.core.inventory.inventory import read_inventory
