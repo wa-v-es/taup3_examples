@@ -86,7 +86,8 @@ ax6.set_ylabel('Reflection-transmission coeff.')
 ax7.set_ylabel('Attenuation')
 ax8.set_ylabel('Radiation P$_{sv}$')
 
-ax8.set_xlabel('Distance ($^\circ$)')
+# ax8.set_xlabel('Distance ($^\circ$)')
+fig.supxlabel('Distance ($^\circ$)',x=.53)
 xmin, xmax = 50, 200
 for ax in axx:
     ax.set_xlim(50,200)
@@ -100,6 +101,6 @@ for ax in axx:
 
     ax.set_xlim(xmin, xmax)
 
-ax8.legend()
-plt.savefig('attributes_july28.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
+# ax8.legend()
+plt.savefig('attributes_aug12.png',dpi=400,bbox_inches='tight', pad_inches=0.1)
 ###
