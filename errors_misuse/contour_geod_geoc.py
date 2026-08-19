@@ -16,6 +16,10 @@ import matplotlib.tri as tri
 from matplotlib.ticker import FormatStrFormatter
 from matplotlib.colors import TwoSlopeNorm,CenteredNorm
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+from ellipticipy import ellipticity_correction
+from obspy.taup import TauPyModel
+from obspy.geodetics.base import gps2dist_azimuth, kilometers2degrees
+
 ###
 
 mpl.rcParams.update({'font.size': 15})
@@ -93,6 +97,17 @@ def plot_dist_diff(station_data,param1='dist_geod',param2='dist_sph',eq_lon=0,eq
     plt.savefig(figname,dpi=400,bbox_inches='tight', pad_inches=0.1)
     plt.show()
 
+def ellipticipy_py_corr(phase=['SS'],spacing=5, max_dist=50,eq_lon=0,eq_lat=45):
+    model = TauPyModel('iasp91')
+    stations = make_station_grid(eq_lat, eq_lon, spacing=spacing, max_dist=max_dist)
+    eventdepth=30
+    for st in stations[0:2]:
+
+         dist_m, az, baz = gps2dist_azimuth(eq_lat, eq_lon, st[0], st[1])
+         dist_d=kilometers2degrees(dist_m / 1000.0)
+         arrivals = model.get_ray_paths(source_depth_in_km = eventdepth, distance_in_degree = dist_d, phase_list = phase)
+         correction=ellipticity_correction(arrivals, azimuth = az, source_latitude = eq_lat)
+
 def cal_dist_time(taupserver,phase=['P'],spacing=5, max_dist=50,eq_lon=0,eq_lat=45):
     phases=(phase)
     eventdepth=30
@@ -148,14 +163,14 @@ def main():
     # taup_path="~/Code/seis/TauP/build/install/TauP/bin/taup"
 
     with taup.TauPServer(taup_path=taup_path) as taupserver:
-        station_data=cal_dist_time(taupserver,phase=['SS'],spacing=5, max_dist=170,eq_lon=0,eq_lat=45)
+        station_data=cal_dist_time(taupserver,phase=['SS'],spacing=20, max_dist=170,eq_lon=0,eq_lat=45)
 
     # distance differences
-    plot_dist_diff(station_data,'dist_geoc','dist_geod',eq_lon=0,eq_lat=45,cmap='PRGn',label="$ \Delta $ Distance ($^\\circ$)",tick_space=.1,figname='geod_geoc_dist_d.png')
-    plot_dist_diff(station_data,'dist_geoc','dist_sph',eq_lon=0,eq_lat=45,cmap='PRGn',label="$ \Delta $ Distance ($^\\circ$)",tick_space=.1,figname='geoc_dist_d.png')
-    ##### time differences
-    plot_dist_diff(station_data,'time_geoc','time_geod',eq_lon=0,eq_lat=45,cmap='RdGy',label="$ \Delta $ Time (s)",tick_space=.5,figname='geod_geoc_time_d.png')
-    plot_dist_diff(station_data,'time_geoc','time_sph',eq_lon=0,eq_lat=45,cmap='RdGy',label="$ \Delta $ Time (s)",tick_space=1,figname='geoc_time_d.png')
+    # plot_dist_diff(station_data,'dist_geoc','dist_geod',eq_lon=0,eq_lat=45,cmap='PRGn',label="$ \Delta $ Distance ($^\\circ$)",tick_space=.1,figname='geod_geoc_dist_d.png')
+    # plot_dist_diff(station_data,'dist_geoc','dist_sph',eq_lon=0,eq_lat=45,cmap='PRGn',label="$ \Delta $ Distance ($^\\circ$)",tick_space=.1,figname='geoc_dist_d.png')
+    # ##### time differences
+    # plot_dist_diff(station_data,'time_geoc','time_geod',eq_lon=0,eq_lat=45,cmap='RdGy',label="$ \Delta $ Time (s)",tick_space=.5,figname='geod_geoc_time_d.png')
+    # plot_dist_diff(station_data,'time_geoc','time_sph',eq_lon=0,eq_lat=45,cmap='RdGy',label="$ \Delta $ Time (s)",tick_space=1,figname='geoc_time_d.png')
 
 if __name__ == '__main__':
     main()
